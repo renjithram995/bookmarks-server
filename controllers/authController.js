@@ -25,7 +25,12 @@ exports.register = async (req, res) => {
 
     jwt.sign(getJWTPayload(user), JWT_SECRET, JWT_CONFIG, (err, token) => {
       if (err) throw err;
-      res.json({ token });
+      res.json({ token,
+        user: {
+          email,
+          username: user.username
+        }
+      });
     });
   } catch (err) {
     console.log(err);
@@ -48,7 +53,12 @@ exports.login = async (req, res) => {
 
     jwt.sign(getJWTPayload(user), JWT_SECRET, JWT_CONFIG, (err, token) => {
       if (err) throw err;
-      res.json({ token });
+      res.json({ token,
+        user: {
+          email,
+          username: user.username
+        }
+      });
     });
   } catch (err) {
     console.log(err);
