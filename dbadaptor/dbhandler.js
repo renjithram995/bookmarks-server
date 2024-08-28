@@ -1,4 +1,3 @@
-
 const appPackage = require('../package.json');
 const mongoose = require('mongoose');
 const { MONGO_DATABASE_NAME, MONGO_URI } = require('../config');
