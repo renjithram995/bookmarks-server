@@ -1,8 +1,7 @@
 const express = require('express');
 const connectDB = require('./dbadaptor/dbhandler');
 const securityHandler = require('./securityHandler');
-const routesHandler = require('./routes/routesHandler')
-require('dotenv').config();
+const routesHandler = require('./routes/routesHandler');
 const { PORT } = require('./config');
 
 const app = express();

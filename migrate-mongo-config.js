@@ -1,6 +1,4 @@
 // In this file you can configure migrate-mongo
-
-require('dotenv').config();
 const { MONGO_URI, MONGO_DATABASE_NAME } = require('./config');
 const config = {
   mongodb: {
