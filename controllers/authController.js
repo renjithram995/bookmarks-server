@@ -6,10 +6,10 @@ const { JWT_EXPIRY, JWT_SECRET } = require('../config');
 
 const getJWTPayload = ({ email, id, username }) => ({
   user: { email, id, username }
-})
+});
 const JWT_CONFIG = {
   expiresIn: JWT_EXPIRY
-}
+};
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
   try {

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config');
 
 module.exports = function(req, res, next) {
-  const authToken = req.headers.authorization?.split(' ')[1] || ''
+  const authToken = req.headers.authorization?.split(' ')[1] || '';
   if (!authToken) return res.status(401).json({ msg: 'No token, authorization denied' });
 
   try {
