@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const { validationResult } = require('express-validator');
-const { JWT_EXPIRY, JWT_SECRET } = require('../config');
+const { JWT_EXPIRY, JWT_SECRET, GIT_TOKEN } = require('../config');
 
 const getJWTPayload = ({ email, id, username }) => ({
   user: { email, id, username }
@@ -11,6 +11,10 @@ const getJWTPayload = ({ email, id, username }) => ({
 const JWT_CONFIG = {
   expiresIn: JWT_EXPIRY
 };
+const axiosConfig = {
+  headers: { Authorization: `Bearer ${GIT_TOKEN}` }
+};
+
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
   try {
@@ -22,7 +26,7 @@ exports.register = async (req, res) => {
     if (user) return res.status(400).json({ msg: 'User already exists' });
 
     try {
-      const validUser = await axios.get(`https://api.github.com/users/${username}`);
+      const validUser = await axios.get(`https://api.github.com/users/${username}`, axiosConfig);
       console.log('validUser', validUser);
     } catch (error) {
       console.log('Invald github user', error);
