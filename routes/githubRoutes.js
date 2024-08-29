@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { checkSchema } = require('express-validator');
-const { searchRepos } = require('../controllers/githubController');
+const { searchRepos, userRepository } = require('../controllers/githubController');
 const auth = require('../middleware/authMiddleware');
-const { searchQueryValidatorSchema } = require('./schemaValidation/searchSchema')
+const { searchQueryValidatorSchema, userRepoValidatorSchema } = require('./schemaValidation/searchSchema');
 
-const queryValidatorSchema = checkSchema(searchQueryValidatorSchema)
-router.get('/search/:type', auth, queryValidatorSchema, searchRepos);
+const searchQueryValidator = checkSchema(searchQueryValidatorSchema);
+const userQueryValidator = checkSchema(userRepoValidatorSchema);
+router.get('/search/:type', auth, searchQueryValidator, searchRepos);
+router.get('/user/:username', auth, userQueryValidator, userRepository);
 
 module.exports = router;

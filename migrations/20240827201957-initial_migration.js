@@ -10,12 +10,13 @@ module.exports = {
     });
     // Ensure the schema is created by inserting a document (MongoDB does not create collections without data)
     await User.create({
-      username: 'admin',
+      username: 'octocat',
       email: 'admin@github.com',
       password: 'admin123',
     });
     await User.collection.createIndex({ email: 1 }, { unique: true });
     await Bookmark.collection.createIndex({ user: 1 });
+    await Bookmark.collection.createIndex({ user: 1, repoUrl: 1 }, { unique: true });
 
     await mongoose.disconnect();
   },

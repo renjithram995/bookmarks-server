@@ -1,6 +1,7 @@
 const User = require('../dbadaptor/dbmodels/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const axios = require('axios');
 const { validationResult } = require('express-validator');
 const { JWT_EXPIRY, JWT_SECRET } = require('../config');
 
@@ -19,6 +20,14 @@ exports.register = async (req, res) => {
     }
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ msg: 'User already exists' });
+
+    try {
+      const validUser = await axios.get(`https://api.github.com/users/${username}`);
+      console.log('validUser', validUser);
+    } catch (error) {
+      console.log('Invald github user', error);
+      return res.status(400).json({ msg: 'Invald github user' });
+    }
 
     user = new User({ username, email, password });
     await user.save();
