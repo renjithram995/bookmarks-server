@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const axios = require('axios');
+const mongoose = require('mongoose');
 
 const Bookmark = require('../dbadaptor/dbmodels/Bookmark');
 const parseCSV = require('../utils/csvParser');
@@ -33,11 +34,12 @@ const addBookmark = async (req, res) => {
 const getBookmarks = async (req, res) => {
   try {
     const bookmarks = await Bookmark.find({ user: req.user.id });
-    const responseData = bookmarks.map(({ id: bookMarkId, repoName, repoUrl }) => {
+    const responseData = bookmarks.map(({ id: bookMarkId, repoName, repoUrl, dateBookmarked }) => {
       return {
         repoName,
         repoUrl,
         bookMarked: true,
+        dateBookmarked,
         bookMarkId
       };});
     res.json(responseData);
@@ -105,11 +107,50 @@ const validateRepository = (repoUrl) => {
       }).catch(() => {
         resolve(false);
       });
-    } catch () {
+    } catch {
       reject('Invalid Repository');
     }
   }); 
 };
 
+const aggregateBookmarkData = (req, res) => {
+  try {
+    Bookmark.aggregate([
+      {
+        $match: { user: new mongoose.Types.ObjectId(req.user.id) }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$dateBookmarked' } },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          date: '$_id',
+          count: 1
+        }
+      },
+      {
+        $sort: { date: 1 }
+      }
+    ]).then((result) => {
+      console.log(result);
+      return res.json(result);
+    }).catch((err) => {
+      console.log('Error while fetching aggregate data', err);
+      return res.status(400).json({ errors: err.message || err });
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('Server error');
+  }
+};
 
-module.exports = { addBookmark, importBookmarks, getBookmarks, removeBookmarks };
+// const bookmarkBulkInsert = (req, res) => {
+
+// }
+
+
+module.exports = { addBookmark, importBookmarks, getBookmarks, removeBookmarks, aggregateBookmarkData };
