@@ -1,7 +1,11 @@
 const axios = require('axios');
 const { validationResult } = require('express-validator');
 const Bookmark = require('../dbadaptor/dbmodels/Bookmark');
+const { GIT_TOKEN } = require('../config');
 
+const axiosConfig = {
+  headers: { Authorization: `Bearer ${GIT_TOKEN}` }
+};
 const getBookMarkedRepo = (responseData, userId)=> {
   return new Promise((resolve) => {
     const repoUrls = responseData.reduce((accum, data) => {
@@ -39,7 +43,7 @@ exports.searchRepos = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const response = await axios.get(`https://api.github.com/search/${type}?q=${query || undefined}&sort=name&order=asc&page=${skip}&per_page=${top}`);
+    const response = await axios.get(`https://api.github.com/search/${type}?q=${query || undefined}&sort=name&order=asc&page=${skip}&per_page=${top}`, axiosConfig);
     const bookMarkedRepos = await getBookMarkedRepo(response.data.items, req.user.id);
     const responseData = response.data.items.map(({ login, id, full_name: repoName, html_url: repoUrl, owner }) => {
       const { login: ownerLogin } = owner || {};
@@ -70,9 +74,9 @@ exports.userRepository = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const response = await axios.get(`https://api.github.com/users/${username}/repos?sort=name&order=asc&page=${skip}&per_page=${top}`);
+    const response = await axios.get(`https://api.github.com/users/${username}/repos?sort=name&order=asc&page=${skip}&per_page=${top}`, axiosConfig);
     const bookMarkedRepos = await getBookMarkedRepo(response.data, req.user.id);
-    const responseData = response.data.map(({ id, name: repoName, html_url: repoUrl }) => {
+    const responseData = response.data.map(({ id, full_name: repoName, html_url: repoUrl }) => {
       const bookMarkId = bookMarkedRepos[repoUrl];
       return {
         username,
