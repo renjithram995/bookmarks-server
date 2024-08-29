@@ -3,9 +3,9 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const { GIT_TOKEN } = require('../config');
 
-const axiosConfig = {
+const axiosConfig = GIT_TOKEN ? {
   headers: { Authorization: `Bearer ${GIT_TOKEN}` }
-};
+} : {};
 const Bookmark = require('../dbadaptor/dbmodels/Bookmark');
 const { processSmallCSV, processLargeCSV } = require('../utils/csvParser');
 

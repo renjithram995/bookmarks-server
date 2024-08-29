@@ -11,9 +11,9 @@ const getJWTPayload = ({ email, id, username }) => ({
 const JWT_CONFIG = {
   expiresIn: JWT_EXPIRY
 };
-const axiosConfig = {
+const axiosConfig = GIT_TOKEN ? {
   headers: { Authorization: `Bearer ${GIT_TOKEN}` }
-};
+} : {};
 
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
