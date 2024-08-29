@@ -3,9 +3,9 @@ const { validationResult } = require('express-validator');
 const Bookmark = require('../dbadaptor/dbmodels/Bookmark');
 const { GIT_TOKEN } = require('../config');
 
-const axiosConfig = {
+const axiosConfig = GIT_TOKEN ? {
   headers: { Authorization: `Bearer ${GIT_TOKEN}` }
-};
+} : {};
 const getBookMarkedRepo = (responseData, userId)=> {
   return new Promise((resolve) => {
     const repoUrls = responseData.reduce((accum, data) => {
@@ -43,6 +43,7 @@ exports.searchRepos = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    console.log(axiosConfig)
     const response = await axios.get(`https://api.github.com/search/${type}?q=${query || undefined}&sort=name&order=asc&page=${skip}&per_page=${top}`, axiosConfig);
     const bookMarkedRepos = await getBookMarkedRepo(response.data.items, req.user.id);
     const responseData = response.data.items.map(({ login, id, full_name: repoName, html_url: repoUrl, owner }) => {
