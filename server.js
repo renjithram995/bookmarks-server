@@ -3,6 +3,7 @@ const connectDB = require('./dbadaptor/dbhandler');
 const securityHandler = require('./securityHandler');
 const routesHandler = require('./routes/routesHandler');
 const { PORT } = require('./config');
+const cronJob = require('./cronjob.js');
 
 const app = express();
 
@@ -15,5 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 routesHandler(app);
+
+cronJob();
 
 app.listen(PORT, console.log.bind(console, `Server started on port ${PORT}`) );
